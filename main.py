@@ -1,12 +1,14 @@
 import sys
-
 import speedtest
+from datetime import datetime
 from ping3 import ping, verbose_ping
 from urllib.parse import urlparse
 
 
 
 def test_servers(hosts):
+    dt_string =  datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print("="*20 +  dt_string + "="*20)
     for host in hosts:
         hostname = urlparse(host).hostname
         
@@ -14,10 +16,11 @@ def test_servers(hosts):
             tgt = hostname    
         else:
             tgt = host.strip()
-
-        print(tgt + " " + str(ping(tgt)))
-    print(speedtest_server())
-
+        try:
+            ping_ms = round(ping(tgt)*1000)
+            print(tgt + "\t\t" + str(ping_ms)+"ms.")
+        except:
+            pass
 
 
 def speedtest_server():
@@ -27,12 +30,13 @@ def speedtest_server():
     s.download()
     s.upload()
     res = s.results.dict()
-    return res["download"], res["upload"], res["ping"]
+    return res["name"],res["download"]/1000.0/1000.0, res["upload"]/1000.0/1000.0, res["ping"]
 
 
 
 if __name__ == '__main__':
     with open(sys.argv[1]) as f:
         content = f.readlines()
-    print(content)
-    test_servers(content)
+    
+    test_servers(content) 
+    print(speedtest_server())
