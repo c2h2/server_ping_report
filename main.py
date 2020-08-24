@@ -1,4 +1,5 @@
 import sys
+import time
 import speedtest
 from datetime import datetime
 from ping3 import ping, verbose_ping
@@ -24,19 +25,23 @@ def test_servers(hosts):
 
 
 def speedtest_server():
-    s = speedtest.Speedtest()
-    s.get_servers()
-    s.get_best_server()
-    s.download()
-    s.upload()
-    res = s.results.dict()
-    return res["name"],res["download"]/1000.0/1000.0, res["upload"]/1000.0/1000.0, res["ping"]
-
+    try:
+        s = speedtest.Speedtest()
+        s.get_servers()
+        s.get_best_server()
+        s.download()
+        s.upload()
+        res = s.results.dict()
+        print(res)
+        return res["server"]["name"],res["download"]/1000.0/1000.0, res["upload"]/1000.0/1000.0, res["ping"]
+    except:
+        pass
 
 
 if __name__ == '__main__':
     with open(sys.argv[1]) as f:
         content = f.readlines()
-    
-    test_servers(content) 
-    print(speedtest_server())
+    while True:
+        test_servers(content) 
+        print(speedtest_server())
+        time.sleep(10)
